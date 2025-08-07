@@ -1,24 +1,24 @@
 FROM python:3.9
 
-# Install system dependencies needed for mysqlclient
+# Install system dependencies needed to build mysqlclient
 RUN apt-get update && apt-get install -y \
-    libmysqlclient-dev \
-    default-libmysqlclient-dev \
+    libmariadb-dev \
+    libmariadb-dev-compat \
     build-essential \
     && rm -rf /var/lib/apt/lists/*
 
-# Set working directory
+# Set work directory
 WORKDIR /app
 
 # Copy requirements and install
 COPY requirements.txt .
-RUN pip install -r requirements.txt
+RUN pip install --no-cache-dir -r requirements.txt
 
-# Copy all source code
+# Copy the rest of the application
 COPY . .
 
 # Expose port
 EXPOSE 8000
 
-# Start the Django app
+# Run Django app
 CMD ["sh", "-c", "python manage.py migrate && python manage.py runserver 0.0.0.0:8000"]
