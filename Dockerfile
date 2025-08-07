@@ -1,21 +1,21 @@
-# Step 1: Use Python 3.9 as the base image
 FROM python:3.9
 
-# Step 2: Set working directory
-WORKDIR /app/backend
+# Install system dependencies
+RUN apt-get update && apt-get install -y \
+    libmysqlclient-dev \
+    default-libmysqlclient-dev \
+    build-essential \
+    && rm -rf /var/lib/apt/lists/*
 
-# Step 3: Copy requirements file
-COPY requirements.txt /app/backend
+# Set work directory
+WORKDIR /app
 
-# Step 4: Install Python dependencies
+# Copy requirements and install
+COPY backend/requirements.txt .
 RUN pip install -r requirements.txt
 
-# Step 5: Copy the rest of the application code
-COPY . /app/backend
+# Copy rest of the app
+COPY . .
 
-# Step 6: Expose the port Django will run on
-EXPOSE 8000
-
-# Step 7: Run the Django development server
-CMD ["python", "/app/backend/manage.py", "runserver", "0.0.0.0:8000"]
-
+# Run the Django server
+CMD ["sh", "-c", "python manage.py migrate && python manage.py runserver 0.0.0.0:8000"]
