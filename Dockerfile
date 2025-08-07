@@ -1,32 +1,21 @@
-FROM python:3.9-slim
+# Step 1: Use Python 3.9 as the base image
+FROM python:3.9
 
-# Install system packages required for mysqlclient
-RUN apt-get update && apt-get install -y \
-    gcc \
-    default-libmysqlclient-dev \
-    build-essential \
-    libssl-dev \
-    libffi-dev \
-    libxml2-dev \
-    libxslt1-dev \
-    zlib1g-dev \
-    libjpeg-dev \
-    && apt-get clean
-
-# Set working directory
+# Step 2: Set working directory
 WORKDIR /app/backend
 
-# Copy only requirements first for caching
-COPY requirements.txt .
+# Step 3: Copy requirements file
+COPY requirements.txt /app/backend
 
-# Install Python dependencies
-RUN pip install --no-cache-dir -r requirements.txt
+# Step 4: Install Python dependencies
+RUN pip install -r requirements.txt
 
-# Copy full project
-COPY . .
+# Step 5: Copy the rest of the application code
+COPY . /app/backend
 
-# Expose Django port
+# Step 6: Expose the port Django will run on
 EXPOSE 8000
 
-# Run migration and start server
-CMD ["sh", "-c", "python manage.py migrate && python manage.py runserver 0.0.0.0:8000"]
+# Step 7: Run the Django development server
+CMD ["python", "/app/backend/manage.py", "runserver", "0.0.0.0:8000"]
+
