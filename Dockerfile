@@ -1,21 +1,24 @@
 FROM python:3.9
 
-# Install system dependencies
+# Install system dependencies needed for mysqlclient
 RUN apt-get update && apt-get install -y \
     libmysqlclient-dev \
     default-libmysqlclient-dev \
     build-essential \
     && rm -rf /var/lib/apt/lists/*
 
-# Set work directory
+# Set working directory
 WORKDIR /app
 
 # Copy requirements and install
-COPY backend/requirements.txt .
+COPY requirements.txt .
 RUN pip install -r requirements.txt
 
-# Copy rest of the app
+# Copy all source code
 COPY . .
 
-# Run the Django server
+# Expose port
+EXPOSE 8000
+
+# Start the Django app
 CMD ["sh", "-c", "python manage.py migrate && python manage.py runserver 0.0.0.0:8000"]
